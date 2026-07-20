@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+*.db
+*.db-wal
+*.db-shm
+data/
+.env
+.env.local
+.env.*.local
+coverage/
+.DS_Store
+*.log
+npm-debug.log*
