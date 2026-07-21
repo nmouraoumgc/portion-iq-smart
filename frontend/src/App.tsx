@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { CalculatorPage } from './pages/CalculatorPage';
 import { HouseholdsPage } from './pages/HouseholdsPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { GroceryListPage } from './pages/GroceryListPage';
 import './App.css';
 
-type Page = 'calculator' | 'households' | 'history';
+type Page = 'calculator' | 'households' | 'history' | 'grocery';
 
 function App() {
   const [page, setPage] = useState<Page>('calculator');
@@ -12,6 +13,7 @@ function App() {
   const navItems: { id: Page; emoji: string; label: string }[] = [
     { id: 'calculator', emoji: '🧮', label: 'Calculate' },
     { id: 'households', emoji: '🏠', label: 'Households' },
+    { id: 'grocery',    emoji: '🛒', label: 'Grocery' },
     { id: 'history',    emoji: '📋', label: 'History' },
   ];
 
@@ -32,6 +34,7 @@ function App() {
       <main className="flex-1 max-w-lg mx-auto w-full px-4 py-6">
         {page === 'calculator'  && <CalculatorPage />}
         {page === 'households'  && <HouseholdsPage />}
+        {page === 'grocery'     && <GroceryListPage />}
         {page === 'history'     && <HistoryPage />}
       </main>
 
@@ -60,4 +63,3 @@ function App() {
 }
 
 export default App;
-

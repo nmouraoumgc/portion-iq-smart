@@ -129,10 +129,11 @@ Base URL: `http://localhost:3001/api`
 
 ### Foods
 
-| Method | Endpoint                     | Description            |
-|--------|------------------------------|------------------------|
-| GET    | `/foods/categories`          | List food categories   |
-| GET    | `/foods/items?category=:id`  | List foods by category |
+| Method | Endpoint                         | Description              |
+|--------|----------------------------------|--------------------------|
+| GET    | `/foods/categories`              | List food categories     |
+| GET    | `/foods/items?category=:id`      | List foods by category   |
+| GET    | `/foods/search?q=:query`         | Search foods by name     |
 
 ### Recommendations
 
@@ -262,13 +263,18 @@ members          id, household_id, name, age, gender, height_cm, weight_kg,
 food_categories  id, name, description, icon
 food_items       id, category_id, name, unit_type, base_serving_g,
                  edible_yield_pct, bone_pct, shell_pct, cooking_loss_pct,
-                 waste_pct, avg_whole_weight_g, practical_unit, practical_unit_weight_g
+                 waste_pct, avg_whole_weight_g, practical_unit, practical_unit_weight_g,
+                 price_per_100g
 meal_sessions    id, household_id, meal_type, food_item_id, member_ids,
                  guest_count, recommended_edible_g, recommended_purchase_g,
                  practical_recommendation, confidence_pct, expected_leftover_g
 meal_feedback    id, session_id, satisfaction, leftover_level, hunger_after,
                  actual_consumed_g
 member_history   id, member_id, food_item_id, actual_consumed_g, session_id
+grocery_lists    id, household_id, name, created_at, updated_at
+grocery_list_items id, list_id, food_item_id, food_name, food_icon,
+                 practical_recommendation, purchase_g, practical_amount,
+                 practical_unit, estimated_cost_min, estimated_cost_max, is_checked
 ```
 
 ---
@@ -297,10 +303,10 @@ Example: "This family consistently eats 12% more chicken than predicted" → fut
 - [x] Adaptive learning from feedback
 
 ### Phase 2
-- [ ] Barcode scanning for packaged foods
-- [ ] Voice input ("Hey PortionIQ, chicken for 6 people")
-- [ ] Cost estimation & price comparison
-- [ ] Grocery list generation
+- [x] Barcode scanning for packaged foods
+- [x] Voice input ("Hey PortionIQ, chicken for 6 people")
+- [x] Cost estimation & price comparison
+- [x] Grocery list generation
 - [ ] Apple Health / Google Fit integration
 
 ### Phase 3

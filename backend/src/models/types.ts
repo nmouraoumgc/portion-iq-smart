@@ -83,6 +83,7 @@ export interface FoodItem {
   avg_whole_weight_g: number | null;
   practical_unit: string | null;
   practical_unit_weight_g: number | null;
+  price_per_100g: number | null;
   notes: string | null;
   created_at: string;
 }
@@ -144,6 +145,8 @@ export interface PortionResult {
   practical_unit: string | null;
   confidence_pct: number;
   expected_leftover_g: number;
+  estimated_cost_min: number | null;
+  estimated_cost_max: number | null;
   per_person_breakdown: PerPersonPortion[];
   context_note: string;
 }
