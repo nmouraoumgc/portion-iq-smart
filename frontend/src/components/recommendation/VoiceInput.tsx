@@ -139,9 +139,7 @@ export const VoiceInput: React.FC<Props> = ({ onFoodSelected }) => {
       {/* Voice button */}
       <div className="flex items-center gap-3">
         <button
-          onMouseDown={handleVoiceStart}
-          onTouchStart={handleVoiceStart}
-          onClick={listening ? handleVoiceStop : undefined}
+          onClick={listening ? handleVoiceStop : handleVoiceStart}
           className={[
             'flex items-center gap-2 px-4 py-2.5 rounded-xl border font-medium text-sm transition-all',
             listening

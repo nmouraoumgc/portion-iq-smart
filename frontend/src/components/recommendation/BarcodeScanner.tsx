@@ -48,6 +48,7 @@ function extractFoodKeyword(name: string): string | null {
 export const BarcodeScanner: React.FC<Props> = ({ onFoodSelected, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [scanning, setScanning] = useState(false);
   const [status, setStatus] = useState<'idle' | 'scanning' | 'found' | 'searching' | 'error'>('idle');
   const [barcode, setBarcode] = useState<string | null>(null);
@@ -63,14 +64,15 @@ export const BarcodeScanner: React.FC<Props> = ({ onFoodSelected, onClose }) => 
   }, []);
 
   const stopScanner = () => {
-    if (readerRef.current) {
-      try {
-        BrowserMultiFormatReader.releaseAllStreams();
-      } catch {
-        // ignore
-      }
-      readerRef.current = null;
+    // Stop only the stream owned by this component instance
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    readerRef.current = null;
     setScanning(false);
   };
 
@@ -86,6 +88,13 @@ export const BarcodeScanner: React.FC<Props> = ({ onFoodSelected, onClose }) => 
     try {
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
+
+      // Obtain the stream first so we can stop only this instance later
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
 
       await reader.decodeFromVideoDevice(undefined, videoRef.current, async (result, err) => {
         if (result) {
@@ -107,6 +116,13 @@ export const BarcodeScanner: React.FC<Props> = ({ onFoodSelected, onClose }) => 
   };
 
   const lookupBarcode = async (code: string) => {
+    // Validate barcode contains only expected characters (alphanumeric and hyphens)
+    if (!/^[\w-]+$/.test(code)) {
+      setStatus('found');
+      setProductName(null);
+      setMatches([]);
+      return;
+    }
     setStatus('searching');
     try {
       // Look up product in Open Food Facts (free, open-source database)
