@@ -60,6 +60,7 @@ export interface FoodItem {
   avg_whole_weight_g: number | null;
   practical_unit: string | null;
   practical_unit_weight_g: number | null;
+  price_per_100g: number | null;
   notes: string | null;
 }
 
@@ -108,6 +109,8 @@ export interface PortionResult {
   practical_unit: string | null;
   confidence_pct: number;
   expected_leftover_g: number;
+  estimated_cost_min: number | null;
+  estimated_cost_max: number | null;
   per_person_breakdown: PerPersonPortion[];
   context_note: string;
 }
@@ -127,4 +130,18 @@ export interface MealSession {
   confidence_pct: number;
   expected_leftover_g: number | null;
   created_at: string;
+}
+
+export interface GroceryListItem {
+  id: string;
+  food_name: string;
+  food_icon: string;
+  practical_recommendation: string;
+  purchase_g: number;
+  practical_amount: number | null;
+  practical_unit: string | null;
+  estimated_cost_min: number | null;
+  estimated_cost_max: number | null;
+  is_checked: boolean;
+  added_at: string;
 }

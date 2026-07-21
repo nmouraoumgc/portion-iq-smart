@@ -10,6 +10,8 @@ import {
 import { Button, Card, Spinner, Select, Input } from '../components/common/UI';
 import { MemberCard } from '../components/households/MemberCard';
 import { RecommendationResult } from '../components/recommendation/RecommendationResult';
+import { VoiceInput } from '../components/recommendation/VoiceInput';
+import { BarcodeScanner } from '../components/recommendation/BarcodeScanner';
 
 const MEAL_TYPE_OPTIONS: { value: MealType; label: string; emoji: string }[] = [
   { value: 'lunch',            label: 'Lunch',            emoji: '☀️' },
@@ -48,6 +50,7 @@ export const CalculatorPage: React.FC = () => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [loadingFoods, setLoadingFoods] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
 
   // Step 3: Results
   const [result, setResult] = useState<PortionResult | null>(null);
@@ -95,6 +98,12 @@ export const CalculatorPage: React.FC = () => {
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
+
+  const handleFoodFromVoiceOrBarcode = useCallback((food: FoodItem, category: FoodCategory) => {
+    setSelectedCategory(category);
+    setFoodItems([food]);
+    setSelectedFood(food);
+  }, []);
 
   const handleGetRecommendation = async () => {
     if (!selectedFood) return;
@@ -268,13 +277,54 @@ export const CalculatorPage: React.FC = () => {
   if (step === 2) {
     return (
       <div className="space-y-4">
+        {showBarcodeScanner && (
+          <BarcodeScanner
+            onFoodSelected={handleFoodFromVoiceOrBarcode}
+            onClose={() => setShowBarcodeScanner(false)}
+          />
+        )}
+
         <StepIndicator />
         <h1 className="text-2xl font-bold text-slate-800 text-center">What are you buying? 🛒</h1>
+
+        {/* Voice + Barcode input row */}
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <VoiceInput onFoodSelected={handleFoodFromVoiceOrBarcode} />
+          </div>
+          <button
+            onClick={() => setShowBarcodeScanner(true)}
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:border-emerald-300 hover:text-emerald-700 transition-all bg-white"
+            title="Scan barcode"
+          >
+            <span className="text-lg">📷</span>
+            <span className="hidden sm:inline">Scan</span>
+          </button>
+        </div>
+
+        {/* Selected food from voice/barcode */}
+        {selectedFood && selectedCategory && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{selectedCategory.icon ?? '🍽️'}</span>
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">{selectedFood.name}</p>
+                <p className="text-xs text-emerald-600">{selectedCategory.name}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { setSelectedFood(null); setSelectedCategory(null); setFoodItems([]); }}
+              className="text-emerald-400 hover:text-emerald-600 text-sm"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Category grid */}
         {!selectedCategory ? (
           <div>
-            <p className="text-sm font-medium text-slate-700 mb-2">Choose a food category:</p>
+            <p className="text-sm font-medium text-slate-700 mb-2">Or browse by category:</p>
             <div className="grid grid-cols-3 gap-2">
               {categories.map(cat => (
                 <button
@@ -338,6 +388,11 @@ export const CalculatorPage: React.FC = () => {
                       <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
                         ✓ {item.edible_yield_pct}% edible
                       </span>
+                      {item.price_per_100g && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                          ~£{item.price_per_100g.toFixed(2)}/100g
+                        </span>
+                      )}
                     </div>
                   </button>
                 ))}

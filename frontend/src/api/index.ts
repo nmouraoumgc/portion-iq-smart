@@ -48,6 +48,9 @@ export const getFoodItems = (categoryId?: string): Promise<FoodItem[]> => {
   return api.get('/foods/items', { params }).then(r => r.data);
 };
 
+export const searchFoodItems = (query: string): Promise<(FoodItem & { category_name: string; category_icon: string })[]> =>
+  api.get('/foods/search', { params: { q: query } }).then(r => r.data);
+
 // ─── Recommendations ──────────────────────────────────
 export const getRecommendation = (req: RecommendationRequest): Promise<PortionResult> =>
   api.post('/recommendations', req).then(r => r.data);

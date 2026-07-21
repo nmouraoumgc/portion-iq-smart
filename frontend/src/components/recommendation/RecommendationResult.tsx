@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PortionResult } from '../../types';
 import { Card, Badge, Button } from '../common/UI';
 import { saveFeedback } from '../../api';
+import { addToGroceryList } from '../../utils/groceryList';
 
 interface Props {
   result: PortionResult;
@@ -26,6 +27,7 @@ export const RecommendationResult: React.FC<Props> = ({ result, sessionId, onNew
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [addedToList, setAddedToList] = useState(false);
 
   const handleFeedback = async (satisfaction: string) => {
     if (!sessionId || feedbackLoading) return;
@@ -38,6 +40,11 @@ export const RecommendationResult: React.FC<Props> = ({ result, sessionId, onNew
     } finally {
       setFeedbackLoading(false);
     }
+  };
+
+  const handleAddToGroceryList = () => {
+    addToGroceryList(result);
+    setAddedToList(true);
   };
 
   return (
@@ -74,6 +81,35 @@ export const RecommendationResult: React.FC<Props> = ({ result, sessionId, onNew
                 : 'Very little'}
             </p>
           </div>
+        </div>
+
+        {/* Cost estimate */}
+        {result.estimated_cost_min !== null && result.estimated_cost_max !== null && (
+          <div className="mt-3 bg-white rounded-xl p-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-500">💰 Estimated cost</p>
+              <p className="font-bold text-slate-800">
+                £{result.estimated_cost_min.toFixed(2)}–£{result.estimated_cost_max.toFixed(2)}
+              </p>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">Approximate supermarket price</p>
+          </div>
+        )}
+
+        {/* Add to grocery list */}
+        <div className="mt-3">
+          <button
+            onClick={handleAddToGroceryList}
+            disabled={addedToList}
+            className={[
+              'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-sm transition-all',
+              addedToList
+                ? 'bg-emerald-100 text-emerald-700 cursor-default'
+                : 'bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50',
+            ].join(' ')}
+          >
+            {addedToList ? '✅ Added to Grocery List' : '🛒 Add to Grocery List'}
+          </button>
         </div>
       </Card>
 

@@ -362,6 +362,16 @@ export function getFoodItems(categoryId?: string) {
   return db.prepare('SELECT * FROM food_items ORDER BY name').all();
 }
 
+export function searchFoodItems(query: string) {
+  const db = getDb();
+  const pattern = `%${query.toLowerCase()}%`;
+  return db.prepare(
+    'SELECT fi.*, fc.name as category_name, fc.icon as category_icon FROM food_items fi ' +
+    'JOIN food_categories fc ON fc.id = fi.category_id ' +
+    'WHERE LOWER(fi.name) LIKE ? ORDER BY fi.name LIMIT 20'
+  ).all(pattern);
+}
+
 export function getMealSessions(householdId?: string, limit = 20) {
   const db = getDb();
   if (householdId) {

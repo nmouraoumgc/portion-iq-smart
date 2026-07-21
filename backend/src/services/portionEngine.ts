@@ -362,6 +362,17 @@ export function calculatePortion(
   const { text, amount, unit } = generatePracticalRecommendation(totalPurchase, food);
   const confidence = calcConfidence(persons, hasHistory);
 
+  // Estimate cost based on purchase weight and price_per_100g (±COST_VARIANCE_PCT range)
+  const COST_VARIANCE_LOW  = 0.80; // -20%
+  const COST_VARIANCE_HIGH = 1.20; // +20%
+  let estimatedCostMin: number | null = null;
+  let estimatedCostMax: number | null = null;
+  if (food.price_per_100g !== null && food.price_per_100g > 0) {
+    const baseCost = (totalPurchase / 100) * food.price_per_100g;
+    estimatedCostMin = Math.round(baseCost * COST_VARIANCE_LOW  * 100) / 100;
+    estimatedCostMax = Math.round(baseCost * COST_VARIANCE_HIGH * 100) / 100;
+  }
+
   // Expected leftover: difference between what was practically recommended and what's needed
   const practicalPurchaseG = amount !== null && food.practical_unit_weight_g !== null
     ? (food.unit_type === 'whole' || food.unit_type === 'pieces' || food.unit_type === 'slices'
@@ -383,6 +394,8 @@ export function calculatePortion(
     practical_unit: unit,
     confidence_pct: confidence,
     expected_leftover_g: Math.round(expectedLeftover),
+    estimated_cost_min: estimatedCostMin,
+    estimated_cost_max: estimatedCostMax,
     per_person_breakdown: breakdown,
     context_note: contextNote,
   };

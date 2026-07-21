@@ -23,6 +23,7 @@ const mockChicken: FoodItem = {
   avg_whole_weight_g: 1200,
   practical_unit: 'medium chicken',
   practical_unit_weight_g: 1200,
+  price_per_100g: 0.80,
   notes: null,
   created_at: '2024-01-01',
 };
@@ -42,6 +43,7 @@ const mockSalmon: FoodItem = {
   avg_whole_weight_g: null,
   practical_unit: null,
   practical_unit_weight_g: null,
+  price_per_100g: 1.80,
   notes: null,
   created_at: '2024-01-01',
 };
