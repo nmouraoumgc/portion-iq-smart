@@ -116,7 +116,9 @@ export const BarcodeScanner: React.FC<Props> = ({ onFoodSelected, onClose }) => 
   };
 
   const lookupBarcode = async (code: string) => {
-    // Validate barcode contains only expected characters (alphanumeric and hyphens)
+    // Validate barcode format: standard barcodes contain only digits, uppercase letters, and hyphens
+    // (EAN-13, UPC-A, Code-128, QR codes, etc.). Rejects anything with special chars that
+    // could be dangerous when interpolated into a URL path segment.
     if (!/^[\w-]+$/.test(code)) {
       setStatus('found');
       setProductName(null);
